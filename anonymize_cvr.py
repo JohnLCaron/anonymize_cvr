@@ -981,7 +981,7 @@ def _redact_ballot_row(
     if not redact_on_precinct and db.precinct_portion_idx is not None:
         result[db.precinct_portion_idx] = ""
     for col_idx in range(db.headerlen, len(result)):
-        if (ballot[col_idx] != ""): result[col_idx] = "*" # CHANGED
+        if (ballot[col_idx] != ""): result[col_idx] = "*"           # CHANGED
     return result
 
 
