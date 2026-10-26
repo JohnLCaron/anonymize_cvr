@@ -33,7 +33,7 @@ from tkinter import filedialog, messagebox
 from collections import defaultdict
 from typing import Dict, List, Optional, Set, Tuple
 
-VERSION = "0.2"
+VERSION = "0.3"
 
 MIN_BALLOTS_DEFAULT = 10
 NEAR_UNANIMOUS_THRESHOLD = 2  # "all but N votes" triggers balancing (Rule c)
@@ -1694,7 +1694,16 @@ def _stream_redacted_output(
                 reader = csv.reader(f_in)
                 writer = csv.writer(f_out, lineterminator=db.lineterminator)
 
-                for _ in range(4):
+                # first row is special: dont remove cols, add "anonymize_cvr-v0.3" to first non-blank string
+                firstrow = next(reader)
+                try:
+                    first_blank_index = firstrow.index("")
+                    firstrow[first_blank_index] = f"anonymize_cvr-v{VERSION}"
+                except ValueError:
+                    print("No blank string found in the list.")
+
+                writer.writerow(firstrow)
+                for _ in range(3):
                     writer.writerow(_remove_columns(next(reader), cols_to_remove))
 
                 for row_idx, row in enumerate(
