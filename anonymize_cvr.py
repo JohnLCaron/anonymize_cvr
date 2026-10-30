@@ -1694,15 +1694,16 @@ def _stream_redacted_output(
                 reader = csv.reader(f_in)
                 writer = csv.writer(f_out, lineterminator=db.lineterminator)
 
-                # first row is special: dont remove cols, add "anonymize_cvr-v0.3" to first non-blank string
+                # first row is special, add anonymize_cvr-v0.3
+                ourversion = f"anonymize_cvr-v{VERSION}"
                 firstrow = next(reader)
                 try:
                     first_blank_index = firstrow.index("")
-                    firstrow[first_blank_index] = f"anonymize_cvr-v{VERSION}"
+                    firstrow[first_blank_index] = ourversion
                 except ValueError:
-                    print("No blank string found in the list.")
+                    firstrow.append(ourversion)
+                writer.writerow(_remove_columns(firstrow, cols_to_remove))
 
-                writer.writerow(firstrow)
                 for _ in range(3):
                     writer.writerow(_remove_columns(next(reader), cols_to_remove))
 
